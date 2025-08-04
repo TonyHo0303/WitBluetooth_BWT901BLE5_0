@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -215,7 +216,9 @@ namespace Wit.SDK.Modular.Sensor.Device
         /// <returns></returns>
         public double? GetDeviceData(DoubleKey dataKey)
         {
+            //SetDeviceData(new DoubleKey("AccX"), 1.23);//新添加的代码，将AccX的值设置为1.23
             string key = dataKey.Key;
+            //Console.WriteLine(key);
             if (DeviceData.ContainsKey(key))
             {
                 object o = DeviceData[key];
@@ -223,6 +226,7 @@ namespace Wit.SDK.Modular.Sensor.Device
                 {
                     return (double)o;
                 }
+                //Console.WriteLine("o不是double");
                 return null;
             }
             else
@@ -364,6 +368,10 @@ namespace Wit.SDK.Modular.Sensor.Device
             {
                 return null;
             }
+        }
+        public void AddDefaultAccX()
+        {
+            SetDeviceData(new DoubleKey("AccX"), 0.00);
         }
     }
 }

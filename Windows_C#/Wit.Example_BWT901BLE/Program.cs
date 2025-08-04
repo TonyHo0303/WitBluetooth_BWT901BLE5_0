@@ -2,6 +2,7 @@
 using System.Threading;
 using Wit.Bluetooth.WinBlue.Interface;
 using Wit.Bluetooth.WinBlue.Utils;
+using Wit.SDK.Device.Device.Device.DKey;
 using Wit.SDK.Modular.WitSensorApi.Modular.BWT901BLE;
 
 namespace Wit.Example_BWT901BLE
@@ -22,7 +23,7 @@ namespace Wit.Example_BWT901BLE
             // 每秒输出“搜索中，时间……”
             while (!deviceConnected)
             {
-                Console.WriteLine($"搜索中，时间……{DateTime.Now:HH:mm:ss}");
+                Console.WriteLine($"搜索中，时间{DateTime.Now:HH:mm:ss}");
                 Thread.Sleep(1000);
             }
 
@@ -43,6 +44,8 @@ namespace Wit.Example_BWT901BLE
             //Console.WriteLine($"发现设备: {name} [{mac}]");
             var device = new Bwt901ble(mac, name);
             device.Open();
+            Console.WriteLine("device open");
+
 
             // 等待设备连接
             Thread.Sleep(1000);
@@ -53,8 +56,32 @@ namespace Wit.Example_BWT901BLE
             string deviceId = device.GetDeviceName();
             Console.WriteLine($"设备ID: {deviceId}");
 
-            device.Close();
-            Console.WriteLine("结束连接");
+            // 数据读取线程
+            Thread dataThread = new Thread(() =>
+            {
+                while (device.IsOpen())
+                {
+
+                    string tempkey = "AccX"; string tempunit = "m/s²"; string tempname = "X轴加速度";
+                    double? accX = device.GetDeviceData(new DoubleKey(tempkey, tempname, tempunit));
+                    Console.WriteLine("HAHAHA");
+                    if (accX!=null)
+                    {
+                        Console.WriteLine("WUWUWU");
+                        Console.WriteLine($"X轴加速度: {accX.Value}");
+                    }
+                    else
+                    {
+                        Console.WriteLine("NULL");
+                    }
+                        Thread.Sleep(100);
+                }
+                device.Close();
+                Console.WriteLine("结束连接");
+            });
+            dataThread.IsBackground = true;
+            dataThread.Start();
+
         }
     }
 }
