@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Reflection;
+using System.Runtime.Remoting.Messaging;
+using System.Text;
 using System.Threading;
 using Wit.Bluetooth.WinBlue.Interface;
 using Wit.Bluetooth.WinBlue.Utils;
 using Wit.SDK.Device.Device.Device.DKey;
+using Wit.SDK.Modular.Sensor.Modular.DataProcessor.Constant;
 using Wit.SDK.Modular.WitSensorApi.Modular.BWT901BLE;
 
 namespace Wit.Example_BWT901BLE
@@ -23,14 +27,20 @@ namespace Wit.Example_BWT901BLE
             // 每秒输出“搜索中，时间……”
             while (!deviceConnected)
             {
-                Console.WriteLine($"搜索中，时间{DateTime.Now:HH:mm:ss}");
-                Thread.Sleep(1000);
+                Console.WriteLine($"搜索中，时间为{DateTime.Now:HH:mm:ss}");
+                Thread.Sleep(1000);//这个时间是于什么有关？这个时间（1000 毫秒）决定了循环的刷新频率
+                if (Console.KeyAvailable)
+                {
+                    var key = Console.ReadKey(true);
+                    if (key.Key == ConsoleKey.Spacebar)
+                    {
+                        Console.WriteLine("检测到空格键，终止程序。");
+                        bluetoothManager.StopScan();
+                        return;
+                    }
+                }
             }
 
-            // 等待设备连接和处理完成
-            Thread.Sleep(2000);
-            bluetoothManager.StopScan();
-            Console.WriteLine("程序结束");
         }
 
         static void OnDeviceFound(string mac, string name)
@@ -64,17 +74,17 @@ namespace Wit.Example_BWT901BLE
 
                     string tempkey = "AccX"; string tempunit = "m/s²"; string tempname = "X轴加速度";
                     double? accX = device.GetDeviceData(new DoubleKey(tempkey, tempname, tempunit));
-                    Console.WriteLine("HAHAHA");
-                    if (accX!=null)
+                    //Console.WriteLine("HAHAHA");
+                    if (accX.HasValue)
                     {
-                        Console.WriteLine("WUWUWU");
+                        //Console.WriteLine("WUWUWU");
                         Console.WriteLine($"X轴加速度: {accX.Value}");
                     }
                     else
                     {
                         Console.WriteLine("NULL");
                     }
-                        Thread.Sleep(100);
+                    Thread.Sleep(100);
                 }
                 device.Close();
                 Console.WriteLine("结束连接");
@@ -83,5 +93,6 @@ namespace Wit.Example_BWT901BLE
             dataThread.Start();
 
         }
+        
     }
 }

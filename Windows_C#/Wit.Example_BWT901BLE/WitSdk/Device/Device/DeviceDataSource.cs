@@ -145,6 +145,7 @@ namespace Wit.SDK.Modular.Sensor.Device
         /// <param name="value"></param>
         public void Put(string key, object value)
         {
+            //Console.WriteLine("Put");
             // 当前数据
             DeviceData[key] = value;
             if (this is DeviceModel)
