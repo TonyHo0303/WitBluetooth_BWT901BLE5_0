@@ -370,9 +370,9 @@ namespace Wit.SDK.Modular.Sensor.Device
                 return null;
             }
         }
-        public void AddDefaultAccX()
-        {
-            SetDeviceData(new DoubleKey("AccX"), 0.00);
-        }
+        //public void AddDefaultAccX()
+        //{
+        //    SetDeviceData(new DoubleKey("AccX"), 0.00);
+        //}
     }
 }
